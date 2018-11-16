@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dz147.dao.EmployeeMapper">
+  <resultMap id="BaseResultMap" type="com.dz147.entity.Employee">
+    <id column="number" jdbcType="VARCHAR" property="number" />
+    <result column="empName" jdbcType="VARCHAR" property="empName" />
+    <result column="empSex" jdbcType="VARCHAR" property="empSex" />
+    <result column="education" jdbcType="VARCHAR" property="education" />
+    <result column="monthly" jdbcType="DECIMAL" property="monthly" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from employee
+    where number = #{number,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.dz147.entity.Employee">
+    insert into employee (number, empName, empSex, 
+      education, monthly)
+    values (#{number,jdbcType=VARCHAR}, #{empName,jdbcType=VARCHAR}, #{empSex,jdbcType=VARCHAR}, 
+      #{education,jdbcType=VARCHAR}, #{monthly,jdbcType=DECIMAL})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.dz147.entity.Employee">
+    update employee
+    set empName = #{empName,jdbcType=VARCHAR},
+      empSex = #{empSex,jdbcType=VARCHAR},
+      education = #{education,jdbcType=VARCHAR},
+      monthly = #{monthly,jdbcType=DECIMAL}
+    where number = #{number,jdbcType=VARCHAR}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select number, empName, empSex, education, monthly
+    from employee
+    where number = #{number,jdbcType=VARCHAR}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select number, empName, empSex, education, monthly
+    from employee
+  </select>
+</mapper>

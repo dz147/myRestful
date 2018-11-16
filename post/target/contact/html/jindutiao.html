@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <script src="../js/jquery.js"></script>
+</head>
+
+<body>
+<h2>上传图片吧</h2>
+<form method="post" enctype="multipart/form-data">
+    选择要上传的文件：<br/>
+    <input type="file" name="file"/><span></span><br/>
+    <!--<input type="file" name="file"/><span></span><br/>-->
+</form>
+<br/>
+<input type="button" value="提交" onclick="upload()" id="sub"/>
+<br/>
+<!--<progress ></progress>
+<p id="progress"></p>
+<p id="info"></p>-->
+<div>
+    <canvas id="myCanvas">您的浏览器不支持Canvas</canvas>
+</div>
+<br/><br/><br/>
+<div>
+    <img src="" alt="" id="newPrc"/>
+</div>
+
+
+<br/>
+
+</body>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script>
+    var totalSize = 0;
+    var url;
+    var img;
+    //绑定所有type=file的元素的onchange事件的处理函数
+    $(':file').change(function () {
+        var file = this.files[0]; //假设file标签没打开multiple属性，那么只取第一个文件就行了
+        var name = file.name;
+        var size = file.size;
+        var type = file.type;
+        url = URL.createObjectURL(file); //获取本地文件的url，如果是图片文件，可用于预览图片
+        //$(this).next().html("文件名：" + name + " 文件类型：" + type + " 文件大小：" + size + " url: " + url);
+        totalSize += size;
+        $("#info").html("总大小: " + totalSize + "bytes");
+        $('#progress').html("");
+        //预览图片
+        img = new Image();
+        img.height = 300;
+        img.width = 300;
+        img.src = url;
+        getConvas(img);
+    });
+
+    //canvas预览图片
+    function getConvas(img) {
+        //准备canvas
+        img.onload = function () {
+            var canvas = document.getElementById("myCanvas");
+            var ctx = canvas.getContext("2d");
+            canvas.width = img.width;
+            canvas.height = img.height;
+            // 绘制图片
+            ctx.drawImage(img, 0, 0, img.width, img.height);
+        }
+    }
+
+    //提交图片ajax
+    function upload() {
+        //创建FormData对象，初始化为form表单中的数据。需要添加其他数据可使用formData.append("property", "value");
+        var formData = new FormData($('form')[0]);
+        //axios轻量级 ajax API
+        axios({
+            method: 'post',
+            url: '/addPicture',
+            data: formData,
+            onUploadProgress: (e) => progressHandlingFunction(e)
+        }).then(function (response) {
+            document.getElementById("newPrc").src = "../imges/" + response.data.gg;
+            console.log(response.data.gg);
+        }).catch(console.error);
+        //ajax异步上传
+        /* $.ajax({
+             url: "/addPicture",
+             method: "post",
+             data: formData,
+             contentType: false, //必须false才会自动加上正确的Content-Type
+             processData: false,  //必须false才会避开jQuery对 formdata 的默认处理
+             xhr: function () { //获取ajaxSettings中的xhr对象，为它的upload属性绑定progress事件的处理函数
+                 var myXhr = $.ajaxSettings.xhr();
+                 if (myXhr.upload) { //检查upload属性是否存在
+                     //绑定progress事件的回调函数
+                     myXhr.upload.addEventListener('progress', progressHandlingFunction, false);
+                 }
+                 return myXhr; //xhr对象返回给jQuery使用
+             },
+             success: function (data) {
+                 //window.location.href = "index.html";
+                 $("#newPrc").attr("src","../imges/"+data.gg+"");
+             }
+         });*/
+    };
+
+    //promise fetch().then().then().fail();
+
+
+    //上传进度回调函数：
+    function progressHandlingFunction(e) {
+        if (e.lengthComputable) {
+            $('progress').attr({value: e.loaded, max: e.total}); //更新数据到进度条
+            var percent = e.loaded / e.total * 100;
+            $('#progress').html("进度：" + percent.toFixed(2) + "%");//e.loaded + "/" + e.total  + + " bytes. "
+            img.height = 300;
+            img.width = 300;
+            img.src = url;
+            progressBar(percent, img);
+        }
+    };
+
+    //画布进度条回调函数
+    function progressBar(percent, img) {
+        var canvas = document.getElementById("myCanvas");
+        var ctx = canvas.getContext("2d");
+        //根据进度清楚画布
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        //准备重画
+        img.onload = function () {
+            canvas.width = img.width;
+            canvas.height = img.height;
+            // 绘制图片
+            ctx.globalAlpha = (percent / 100).toFixed(2);
+            ctx.drawImage(img, 0, 0, img.width, img.height);
+            //绘制进度百分比
+            ctx.font = "bold 20pt Microsoft YaHei";
+            ctx.save();
+            ctx.fillStyle = 'green';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.moveTo(100, 100);
+            ctx.fillText(percent.toFixed(0) + '%', 150, 150);
+            ctx.restore();
+        };
+    };
+
+
+</script>
+</html>

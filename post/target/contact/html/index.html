@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        progress {
+            width: 168px;
+            height: 5px;
+            color: #f00;
+            background: #EFEFF4;
+            border-radius: 0.1rem;
+        }
+
+        /* 表示总长度背景色 */
+        progress::-webkit-progress-bar {
+            background-color: #f2f2f2;
+            border-radius: 0.2rem;
+        }
+
+        /* 表示已完成进度背景色 */
+        progress::-webkit-progress-value {
+            background: forestgreen;
+            border-radius: 0.2rem;
+        }
+    </style>
+</head>
+<body>
+<input type="file" id="myFile"/>
+<div id="bar">
+    上传进度:
+    <progress id="pro" value="0"></progress>
+</div>
+
+<marquee behavior="" direction="">那啥今晚作业 图片预览加载完成后 ＋ 进度条 ajax上传。实时显示百分比</marquee>
+
+<div>
+    <img src="" alt="GG" id="myImg" width="200" height="160"/>
+</div>
+
+</body>
+<script src="../js/jquery.js"></script>
+<script>
+
+
+    var myFile = document.getElementById("myFile");
+    //绑定事件(ECMAScript6写法)
+    myFile.addEventListener("change", () => {
+        var file = myFile.files[0];
+        //toDataURL(file);
+        previewWithObjectURL(file);
+    })
+
+    //简单的图片预览建议使用第一种方式
+    //URL方式（第一种方式）src = blob:http://localhost:8080/f720711f-57e2-428f-8a47-ec59e5dbbc10
+    function previewWithObjectURL(file) {
+        var url = URL.createObjectURL(file);
+        var reader = new FileReader();
+        reader.readAsDataURL(file);
+        //请求完成后,显示图片
+        reader.onloadend = function (event) {
+            document.getElementById("myImg").src = url;
+        }
+        //上传过程中动态显示进度条
+       reader.onprogress = function (event) {
+            if (event.lengthComputable) {
+                document.getElementById("pro").value = event.loaded / event.total;
+            }
+        }
+    }
+
+    //DataURL（第二种方式）src = data image/jpeg;base64,/hihfejaojshf24ji3h53i
+    function toDataURL(file) {
+        var reader = new FileReader();
+        reader.readAsDataURL(file);
+        //请求完成后,显示图片
+        reader.onloadend = function (event) {
+            document.getElementById("myImg").src = event.target.result;
+        }
+        //上传过程中动态显示进度条
+        reader.onprogress = function (event) {
+            if (event.lengthComputable) {
+                document.getElementById("pro").value = event.loaded / event.total;
+            }
+        }
+    }
+</script>
+</html>

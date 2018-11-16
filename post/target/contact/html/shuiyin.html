@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Watermarks</title>
+</head>
+
+<body>
+<div style="border: 1px solid red;" id="div1">
+  <img id="img" src="../imges/iPhone%207%20Plus_验机报告_00026161006B8F26_20181102151346.png"/>
+</div>
+<div >
+  <canvas id="myCanvas"  >您的浏览器不支持Canvas</canvas>
+</div>
+<script>
+    //新建img对象
+    // img加载完成
+        var img = document.getElementById("img");
+        //准备canvas
+        var canvas=document.getElementById("myCanvas");
+        var context=canvas.getContext("2d");
+        // 绘制图片
+        context.drawImage(img,0,0,img.width,img.height);
+        // 绘制水印
+        context.font="20px microsoft yahei";
+        context.fillStyle = "red";
+        context.fillText("9999",24,24);
+
+</script>
+</body>

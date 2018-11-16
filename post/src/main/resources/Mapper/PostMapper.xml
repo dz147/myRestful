@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dz147.dao.PostMapper">
+  <resultMap id="BaseResultMap" type="com.dz147.entity.Post">
+    <id column="pid" jdbcType="INTEGER" property="pid" />
+    <result column="aid" jdbcType="INTEGER" property="aid" />
+    <result column="pname" jdbcType="VARCHAR" property="pname" />
+    <result column="content" jdbcType="VARCHAR" property="content" />
+    <result column="writedate" jdbcType="TIMESTAMP" property="writedate" />
+    <association  column="aid" property="author" select="com.dz147.dao.AuthorMapper.selectByPrimaryKey"/>
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from post
+    where pid = #{pid,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.dz147.entity.Post">
+    insert into post (pid, aid, pname, 
+      content, writedate)
+    values (#{pid,jdbcType=INTEGER}, #{aid,jdbcType=INTEGER}, #{pname,jdbcType=VARCHAR}, 
+      #{content,jdbcType=VARCHAR}, #{writedate,jdbcType=TIMESTAMP})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.dz147.entity.Post">
+    update post
+    set aid = #{aid,jdbcType=INTEGER},
+      pname = #{pname,jdbcType=VARCHAR},
+      content = #{content,jdbcType=VARCHAR},
+      writedate = #{writedate,jdbcType=TIMESTAMP}
+    where pid = #{pid,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select pid, aid, pname, content, writedate
+    from post
+    where pid = #{pid,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select pid, aid, pname, content, writedate
+    from post
+  </select>
+</mapper>
